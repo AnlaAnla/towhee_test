@@ -10,8 +10,8 @@ vec_num = 0
 yolo_model = torch.hub.load(r"C:\Users\Administrator\.cache\torch\hub\ultralytics_yolov5_master", 'custom',
                             path="yolov5s.pt", source='local')
 
-dataset_path = [r"D:\Code\ML\images\Mywork3\card_database\prizm\21-22\*\*"]
-yolo_dataset_dir = r"D:\Code\ML\images\Mywork3\card_database_yolo"
+dataset_path = [r"D:\Code\ML\images\test02\test(mosaic,pz)\*\*\*\*"]
+yolo_dataset_dir = r"D:\Code\ML\images\test02\test(mosaic,pz)_yolo"
 
 
 def get_save_dir(save_dir, source_path):

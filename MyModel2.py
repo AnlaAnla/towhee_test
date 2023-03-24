@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 import cv2
@@ -9,34 +8,30 @@ import timm
 
 
 class MyModel:
-    def __init__(self, model_dict_path, out_features=2560):
+    def __init__(self, model_dict_path, out_features=2048):
         self.out_features = out_features
         self.norm_mean = [0.485, 0.456, 0.406]
         self.norm_std = [0.229, 0.224, 0.225]
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.model = models.efficientnet_b7()
-        self.model.classifier = nn.Sequential(
-            nn.Linear(in_features=2560, out_features=out_features, bias=False)
-        )
+        self.model = models.resnet50(pretrained=False)
+        self.model.fc = torch.nn.Linear(in_features=2048, out_features=self.out_features)
 
         self.model.load_state_dict(torch.load(model_dict_path, map_location=self.device))
-        # self.model.fc = torch.nn.Linear(in_features=2048, out_features=self.out_features)
-        # self.model.load_state_dict(torch.load(model_dict_path))
+        # self.model = timm.create_model('resnet50', num_classes=2048, pretrained=True)
+        self.model.eval()
 
         # 自定义模型
         # print(list(self.model.children()))
-        features = list(self.model.children())[:-1]  # 去掉最后一部分
+        features = list(self.model.children())[:-1]  # 去掉dropout 和 Linear
         self.model = torch.nn.Sequential(*features).to(self.device)
 
-        self.model.eval()
         # self.model.to(self.device)
 
     def inference_transform(self):
         inference_transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
+            transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(self.norm_mean, self.norm_std),
         ])
@@ -69,4 +64,4 @@ class MyModel:
 
         with torch.no_grad():
             outputs = self.model(img_tensor)
-        return outputs.reshape(2560).cpu().numpy()
+        return outputs.reshape(2048).cpu().numpy()

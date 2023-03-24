@@ -6,11 +6,9 @@ import PIL.Image as Image
 import numpy as np
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType, Collection, utility
 
-from MyModel2 import MyModel
-
+from MyEfficientNet import MyModel
 import torch
-from transformers import ViTFeatureExtractor, ViTModel
-from towhee.types.image_utils import to_image_color
+
 
 connections.connect(host='127.0.0.1', port='19530')
 dataset_path = ["D:\Code\ML\images\Mywork3\card_database_yolo/*/*/*/*"]
@@ -18,11 +16,7 @@ dataset_path = ["D:\Code\ML\images\Mywork3\card_database_yolo/*/*/*/*"]
 img_id = 0
 yolo_num = 0
 vec_num = 0
-myModel = MyModel(r"D:\Code\ML\model\card_cls\res_card_out764_freeze5.pth", out_features=764)
-# myModel = MyModel(r"C:\Users\Administrator\.cache\torch\hub\checkpoints\resnet50-0676ba61.pth", out_features=1000)
-
-# myModel = MyEfficient('')
-
+myModel = MyModel(r"D:\Code\ML\model\card_cls\effcient_card_out854_freeze2.pth", out_features=854)
 
 # yolo_model = torch.hub.load(r"C:\Users\Administrator\.cache\torch\hub\ultralytics_yolov5_master", 'custom',
 #                             path="yolov5s.pt", source='local')
@@ -147,7 +141,7 @@ def is_creat_collection(have_coll, collection_name):
         collection = Collection(name=collection_name)
     else:
         # 新建立数据库
-        collection = create_milvus_collection(collection_name, 2048)
+        collection = create_milvus_collection(collection_name, 2560)
         dc = (
             towhee.glob['path'](*dataset_path)
             .runas_op['path', 'img_id'](func=get_id)
@@ -194,7 +188,7 @@ if __name__ == '__main__':
     print('start')
 
     # 是否存在数据库
-    have_coll = False
+    have_coll = True
 
     # 默认模型
     # collection = is_creat_collection(have_coll=have_coll, collection_name="reverse_image_search")
@@ -267,3 +261,7 @@ if __name__ == '__main__':
     print("top3 准确率:{} % \n top1 准确率: {} %".
           format(top3_accuracy, top1_accuracy))
 
+'''
+
+  
+'''
